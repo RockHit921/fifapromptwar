@@ -1,5 +1,6 @@
 import { GoogleGenAI } from '@google/genai';
 import type { VisionAnalysisResult, IncidentAlert } from '../types';
+import { lruCache } from './cacheService';
 
 // Storage key for user-provided Gemini API key
 const GEMINI_API_KEY_STORAGE = 'apexarena_gemini_api_key';
@@ -29,6 +30,12 @@ export async function askMultilingualAssistant(
   targetLanguage: string = 'English',
   stadiumContext: string = 'MetLife Stadium'
 ): Promise<{ text: string; source: 'gemini' | 'demo' }> {
+  const cacheKey = `assistant:${stadiumContext}:${targetLanguage}:${userQuery.toLowerCase().trim()}`;
+  const cached = lruCache.get<{ text: string; source: 'gemini' | 'demo' }>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const ai = getGenAIClient();
 
   const systemPrompt = `You are ApexArena, the official FIFA World Cup 2026 Smart Stadium AI Assistant operating at ${stadiumContext}.
@@ -46,7 +53,9 @@ Respond warmly, concisely, and accurately in ${targetLanguage}. Keep answers und
 
       const responseText = response.text || '';
       if (responseText) {
-        return { text: responseText, source: 'gemini' };
+        const result = { text: responseText, source: 'gemini' as const };
+        lruCache.set(cacheKey, result);
+        return result;
       }
     } catch (err) {
       console.warn('Gemini API call failed, falling back to smart demo response:', err);
@@ -54,7 +63,9 @@ Respond warmly, concisely, and accurately in ${targetLanguage}. Keep answers und
   }
 
   // Smart Demo Response Engine (when API key is absent or offline)
-  return { text: generateDemoAssistantResponse(userQuery, stadiumContext), source: 'demo' };
+  const demoResult = { text: generateDemoAssistantResponse(userQuery, stadiumContext), source: 'demo' as const };
+  lruCache.set(cacheKey, demoResult);
+  return demoResult;
 }
 
 /**
