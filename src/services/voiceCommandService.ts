@@ -1,9 +1,20 @@
+/**
+ * Represents the result of parsing a voice command.
+ */
 export interface VoiceCommandMatch {
+  /** The action recognized from the voice command. */
   action: 'SWITCH_MODE' | 'TOGGLE_HIGH_CONTRAST' | 'TOGGLE_DYSLEXIA' | 'SELECT_GATE' | 'PLAY_BEACON' | 'UNKNOWN';
+  /** The specific target value associated with the action, if any. */
   targetValue?: string;
+  /** A human-readable feedback message describing the action taken. */
   feedbackMessage: string;
 }
 
+/**
+ * Parses a transcribed speech string and returns the corresponding voice command action.
+ * @param {string} speechText - The text transcribed from user speech.
+ * @returns {VoiceCommandMatch} The matched command action and feedback message.
+ */
 export function parseVoiceCommand(speechText: string): VoiceCommandMatch {
   const text = speechText.toLowerCase().trim();
 

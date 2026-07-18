@@ -2,6 +2,13 @@
  * Input Security & XSS Sanitization Utility
  */
 
+import { API_KEY_PATTERN } from '../constants';
+
+/**
+ * Sanitizes input string to prevent XSS attacks by escaping HTML special characters.
+ * @param {string} input - The raw input string.
+ * @returns {string} The sanitized string.
+ */
 export function sanitizeInput(input: string): string {
   if (!input) return '';
   return input
@@ -14,8 +21,12 @@ export function sanitizeInput(input: string): string {
     .trim();
 }
 
+/**
+ * Validates the format of a Google API key.
+ * @param {string} key - The API key to validate.
+ * @returns {boolean} True if the key matches the expected format, false otherwise.
+ */
 export function validateApiKeyFormat(key: string): boolean {
   if (!key) return false;
-  // Google API keys typically start with AIzaSy and are ~39 characters long
-  return /^AIzaSy[A-Za-z0-9_-]{33}$/.test(key.trim());
+  return API_KEY_PATTERN.test(key.trim());
 }

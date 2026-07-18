@@ -1,19 +1,11 @@
-// Map common languages to BCP-47 language tags for SpeechSynthesis and SpeechRecognition
-const LANGUAGE_TAGS: Record<string, string> = {
-  English: 'en-US',
-  Spanish: 'es-ES',
-  French: 'fr-FR',
-  Portuguese: 'pt-BR',
-  German: 'de-DE',
-  Arabic: 'ar-SA',
-  Japanese: 'ja-JP',
-  Korean: 'ko-KR',
-  Hindi: 'hi-IN',
-  Chinese: 'zh-CN',
-};
+import { LANGUAGE_TAGS } from '../constants';
 
 /**
- * Text-to-Speech (TTS) Announcement service
+ * Text-to-Speech (TTS) Announcement service. Synthesizes and plays spoken text.
+ * @param {string} text - The text to be spoken.
+ * @param {string} [language='English'] - The language name (e.g., 'English', 'Spanish').
+ * @param {() => void} [onEnd] - Optional callback triggered when speech ends.
+ * @returns {boolean} True if speech synthesis is supported and initiated, false otherwise.
  */
 export function speakText(
   text: string,
@@ -49,6 +41,9 @@ export function speakText(
   return true;
 }
 
+/**
+ * Stops any ongoing text-to-speech synthesis immediately.
+ */
 export function stopSpeaking(): void {
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
@@ -56,7 +51,11 @@ export function stopSpeaking(): void {
 }
 
 /**
- * Speech-to-Text (STT) Recognition service
+ * Speech-to-Text (STT) Recognition service. Creates a speech recognition instance.
+ * @param {string} [language='English'] - The expected spoken language.
+ * @param {(transcript: string) => void} onResult - Callback receiving the transcribed text.
+ * @param {(error: string) => void} onError - Callback receiving error messages.
+ * @returns {{ start: () => void; stop: () => void; isSupported: boolean }} An object with methods to start/stop recognition and a support flag.
  */
 export function createSpeechRecognizer(
   language: string = 'English',

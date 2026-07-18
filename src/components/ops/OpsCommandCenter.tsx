@@ -3,6 +3,8 @@ import { CrowdHeatmap } from './CrowdHeatmap';
 import { VisionAnalyzer } from './VisionAnalyzer';
 import { IncidentDispatcher } from './IncidentDispatcher';
 import { PAAnnouncer } from './PAAnnouncer';
+import { WeatherSafetyMonitor } from './WeatherSafetyMonitor';
+import { VolunteerCoordinator } from './VolunteerCoordinator';
 
 export const OpsCommandCenter: React.FC = () => {
   return (
@@ -24,6 +26,16 @@ export const OpsCommandCenter: React.FC = () => {
         </div>
         <div className="lg:col-span-6">
           <PAAnnouncer />
+        </div>
+      </div>
+
+      {/* Weather Safety & Volunteer Coordination */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-6">
+          <WeatherSafetyMonitor />
+        </div>
+        <div className="lg:col-span-6">
+          <VolunteerCoordinator />
         </div>
       </div>
     </div>
